@@ -7,8 +7,9 @@ let arregloDeLista;
 let celda;
 let fila;
 //Cargar el archivo
+
 $.ajax({
-  url: "/baseDeDatos - Sheet2.csv",
+  url: "./datos-sprint2.csv",
   dataType: "text"
 }).done(successFunction);
 
@@ -139,10 +140,6 @@ function successFunction(data) {
       console.log(informacion);
     }
     
-  }
-  
-  
-  
+  }    
   body.appendChild(table);
-
 }
