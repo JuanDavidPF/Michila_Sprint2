@@ -3,6 +3,7 @@ var table = document.createElement("table");
 var btnOrdenarA = document.querySelector(".btn__ordenaA");
 var btnOrdenarB = document.querySelector(".btn__ordenaD");
 var selecciona = document.querySelector(".selecciona");
+let similitudCosenoTitleDOM = document.querySelector(".result_similitud");
 let arregloDeLista;
 let celda;
 let fila;
@@ -47,9 +48,18 @@ function successFunction(data) {
     //AQUI SE LE AGREGAN POSICIONES
     informacion.push({
       correo: arregloDeLista[0],
-      participaciones: arregloDeLista[1],
-      columnaa: arregloDeLista[2],
-      columnab: arregloDeLista[3],
+      cifras: [
+        parseFloat(arregloDeLista[1]),
+        parseFloat(arregloDeLista[2]),
+        parseFloat(arregloDeLista[3]),
+        parseFloat(arregloDeLista[4]),
+        parseFloat(arregloDeLista[5]),
+      ],
+      dato1: parseFloat(arregloDeLista[1]),
+      dato2: parseFloat(arregloDeLista[2]),
+      dato3: parseFloat(arregloDeLista[3]),
+      dato4: parseFloat(arregloDeLista[4]),
+      dato5: parseFloat(arregloDeLista[5]),
     });
 
     //Link click event listener to the row
@@ -115,16 +125,54 @@ function successFunction(data) {
     personDOM.classList.add("selected");
     peopleSelected.push(person);
 
-    if (peopleSelected.length == 2)
-      SimilitudCoseno(
-        peopleSelected[0].personData,
-        peopleSelected[1].personData
-      );
+    if (peopleSelected.length == 2) {
+      similitudCosenoTitleDOM.textContent =
+        "La similitud coseno entre " +
+        peopleSelected[0].personData.correo +
+        " y " +
+        peopleSelected[1].personData.correo +
+        " es : " +
+        SimilitudCoseno(
+          peopleSelected[0].personData,
+          peopleSelected[1].personData
+        ).toFixed(2);
+    }
   } //closes HandlePersonClick method
 
   function SimilitudCoseno(personA, personB) {
-    console.log(personA + ", " + personB);
+    let similitudCoseno = 0;
+
+    personA = JSON.parse(JSON.stringify(personA));
+    personB = JSON.parse(JSON.stringify(personB));
+
+    let productoPunto = ProductoPunto(personA, personB);
+    let magnitudA = Magnitud(personA);
+    let magnitudB = Magnitud(personB);
+
+    similitudCoseno = productoPunto / (magnitudA * magnitudB);
+    return similitudCoseno;
   } //closes SimilitudCoseno method
+
+  function ProductoPunto(ArrayA, ArrayB) {
+    let producto = 0;
+
+    for (let i = 0; i < ArrayA.cifras.length; i++) {
+      producto += ArrayA.cifras[i] * ArrayB.cifras[i];
+    }
+
+    return producto;
+  } //closes ProductoPunto method
+
+  function Magnitud(Array) {
+    let magnitud = 0;
+
+    for (let i = 0; i < Array.cifras.length; i++) {
+      magnitud += Math.pow(Array.cifras[i], 2);
+    }
+
+    magnitud = Math.sqrt(magnitud);
+    return magnitud;
+  } //closes Magnitud method
 
   body.appendChild(table);
 } //closes sucessFunction method
