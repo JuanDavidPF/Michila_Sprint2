@@ -9,7 +9,7 @@ let fila;
 //Cargar el archivo
 
 $.ajax({
-  url: "./datos-sprint2.csv",
+  url: "./datos_sprint2.csv",
   dataType: "text"
 }).done(successFunction);
 
