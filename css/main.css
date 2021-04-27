@@ -4,15 +4,24 @@ table {
   border-collapse: collapse;
   border: 1px solid #d4d4d4;
 }
- 
+
 tr:nth-child(even) {
-  background: #d4d4d4;
+  background-color: #d4d4d4;
 }
- 
-th, td {
+
+tr:nth-child(even).selected {
+  background-color: aqua;
+}
+
+th,
+td {
   padding: 10px 30px;
 }
- 
+
 th {
   border-bottom: 1px solid #d4d4d4;
+}
+
+.selected {
+  background-color: aqua;
 }
