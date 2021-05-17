@@ -1,19 +1,22 @@
-var body = document.querySelector("body");
-var table = document.createElement("table");
-var btnOrdenarA = document.querySelector(".btn__ordenaA");
-var btnOrdenarB = document.querySelector(".btn__ordenaD");
-var selecciona = document.querySelector(".selecciona");
-let similitudCosenoTitleDOM = document.querySelector(".result_similitud");
+const body = document.querySelector("body");
+const table = document.createElement("table");
+// var btnOrdenarA = document.querySelector(".btn__ordenaA");
+// var btnOrdenarB = document.querySelector(".btn__ordenaD");
+// var selecciona = document.querySelector(".selecciona");
+// let similitudCosenoTitleDOM = document.querySelector(".result_similitud");
 let arregloDeLista;
 let celda;
 let fila;
-
+let peopleSelectionMaxSize = 1;
+var usersDatabase = [];
 let peopleSelected = [];
+
+const groupSize = document.querySelector(".groupSize");
 
 //Cargar el archivo
 
 $.ajax({
-  url: "./datos_sprint2.csv",
+  url: "./datos-sprint3.csv",
   dataType: "text",
 }).done(successFunction);
 
@@ -22,7 +25,7 @@ function successFunction(data) {
   //digamos que es una linea
   var datosFila = data.split("\n");
   //Arreglo donde se guarda la nueva información
-  var informacion = [];
+  usersDatabase = [];
 
   for (let index = 1; index < datosFila.length; index++) {
     //Lectura de una linea
@@ -46,133 +49,180 @@ function successFunction(data) {
 
     table.appendChild(fila);
     //AQUI SE LE AGREGAN POSICIONES
-    informacion.push({
+
+    let personData = [];
+
+    for (let i = 1; i < arregloDeLista.length; i++) {
+      personData[i - 1] = parseFloat(arregloDeLista[i]);
+    }
+
+    usersDatabase.push({
       correo: arregloDeLista[0],
-      cifras: [
-        parseFloat(arregloDeLista[1]),
-        parseFloat(arregloDeLista[2]),
-        parseFloat(arregloDeLista[3]),
-        parseFloat(arregloDeLista[4]),
-        parseFloat(arregloDeLista[5]),
-      ],
-      dato1: parseFloat(arregloDeLista[1]),
-      dato2: parseFloat(arregloDeLista[2]),
-      dato3: parseFloat(arregloDeLista[3]),
-      dato4: parseFloat(arregloDeLista[4]),
-      dato5: parseFloat(arregloDeLista[5]),
+      cifras: personData,
     });
 
     //Link click event listener to the row
     fila.addEventListener("click", (event) =>
-      HandlePersonClick(informacion[index - 1], event.target.parentElement)
+      HandlePersonClick(usersDatabase[index - 1], event.target.parentElement)
     );
   }
 
-  btnOrdenarA.addEventListener("click", ordenarA);
+  // btnOrdenarA.addEventListener("click", ordenarA);
 
-  btnOrdenarB.addEventListener("click", ordenarB);
+  // btnOrdenarB.addEventListener("click", ordenarB);
 
-  function ordenarA() {
-    if (selecciona.value === "participaciones") {
-      informacion.sort(function (objetoA, objetoB) {
-        //Ordenar por ID
-        return objetoA.participaciones - objetoB.participaciones;
-      });
-    } else if (selecciona.value === "columnaA") {
-      informacion.sort(function (objetoA, objetoB) {
-        //Ordenar por ID
-        return objetoA.columnaa - objetoB.columnaa;
-      });
-    } else if (selecciona.value === "columnaB") {
-      informacion.sort(function (objetoA, objetoB) {
-        //Ordenar por ID
-        return objetoA.columnab - objetoB.columnab;
-      });
-    }
+  body.appendChild(table);
+} //closes sucessFunction methods
+
+function ordenarA() {
+  if (selecciona.value === "participaciones") {
+    informacion.sort(function (objetoA, objetoB) {
+      //Ordenar por ID
+      return objetoA.participaciones - objetoB.participaciones;
+    });
+  } else if (selecciona.value === "columnaA") {
+    informacion.sort(function (objetoA, objetoB) {
+      //Ordenar por ID
+      return objetoA.columnaa - objetoB.columnaa;
+    });
+  } else if (selecciona.value === "columnaB") {
+    informacion.sort(function (objetoA, objetoB) {
+      //Ordenar por ID
+      return objetoA.columnab - objetoB.columnab;
+    });
   }
+} //closes ordenarA method
 
-  function ordenarB() {
-    if (selecciona.value === "participaciones") {
-      informacion.sort(function (objetoB, objetoA) {
-        //Ordenar por ID
+function ordenarB() {
+  if (selecciona.value === "participaciones") {
+    informacion.sort(function (objetoB, objetoA) {
+      //Ordenar por ID
 
-        return objetoA.participaciones - objetoB.participaciones;
-      });
-    } else if (selecciona.value === "columnaA") {
-      informacion.sort(function (objetoB, objetoA) {
-        //Ordenar por ID
-        return objetoA.columnaa - objetoB.columnaa;
-      });
-    } else if (selecciona.value === "columnaB") {
-      informacion.sort(function (objetoB, objetoA) {
-        //Ordenar por ID
-        return objetoA.columnab - objetoB.columnab;
-      });
-    }
+      return objetoA.participaciones - objetoB.participaciones;
+    });
+  } else if (selecciona.value === "columnaA") {
+    informacion.sort(function (objetoB, objetoA) {
+      //Ordenar por ID
+      return objetoA.columnaa - objetoB.columnaa;
+    });
+  } else if (selecciona.value === "columnaB") {
+    informacion.sort(function (objetoB, objetoA) {
+      //Ordenar por ID
+      return objetoA.columnab - objetoB.columnab;
+    });
   }
+} //closes ordenarB method
 
-  function HandlePersonClick(personClicked, personDOM) {
-    let person = {
-      personData: personClicked,
-      personDom: personDOM,
-    };
+function HandlePersonClick(personClicked, personDOM) {
+  var person = {
+    personData: personClicked,
+    personDom: personDOM,
+  };
 
-    if (peopleSelected.length == 2) {
-      let oldestPerson = peopleSelected.shift();
-      oldestPerson.personDom.classList.remove("selected");
-    }
-
+  if (!personDOM.classList.contains("selected")) {
     personDOM.classList.add("selected");
     peopleSelected.push(person);
 
-    if (peopleSelected.length == 2) {
-      similitudCosenoTitleDOM.textContent =
-        "La similitud coseno entre " +
-        peopleSelected[0].personData.correo +
-        " y " +
-        peopleSelected[1].personData.correo +
-        " es : " +
-        SimilitudCoseno(
-          peopleSelected[0].personData,
-          peopleSelected[1].personData
-        ).toFixed(2);
+    if (peopleSelected.length > peopleSelectionMaxSize) {
+      let oldestPersonSelected = peopleSelected.shift();
+      oldestPersonSelected.personDom.classList.remove("selected");
     }
-  } //closes HandlePersonClick method
+  } else {
+    peopleSelected.splice(
+      peopleSelected.findIndex(
+        (people) => people.personData.correo === person.personData.correo
+      ),
+      1
+    );
+    personDOM.classList.remove("selected");
+  }
 
-  function SimilitudCoseno(personA, personB) {
-    let similitudCoseno = 0;
+  // if (peopleSelected.length == 2) {
+  //   similitudCosenoTitleDOM.textContent =
+  //     "La similitud coseno entre " +
+  //     peopleSelected[0].personData.correo +
+  //     " y " +
+  //     peopleSelected[1].personData.correo +
+  //     " es : " +
+  //     SimilitudCoseno(
+  //       peopleSelected[0].personData,
+  //       peopleSelected[1].personData
+  //     ).toFixed(2);
+  // }
+} //closes HandlePersonClick method
 
-    personA = JSON.parse(JSON.stringify(personA));
-    personB = JSON.parse(JSON.stringify(personB));
+function Parchar() {
+  let parche = [];
 
-    let productoPunto = ProductoPunto(personA, personB);
-    let magnitudA = Magnitud(personA);
-    let magnitudB = Magnitud(personB);
+  peopleSelected.forEach((personSlected) => {
+    usersDatabase.forEach((neighbour) => {
+      let similitudCoseno = SimilitudCoseno(
+        personSlected.personData,
+        neighbour
+      );
 
-    similitudCoseno = productoPunto / (magnitudA * magnitudB);
-    return similitudCoseno;
-  } //closes SimilitudCoseno method
+      let miembroParche = {
+        name: neighbour.correo,
+        similitudCoseno: similitudCoseno,
+      };
 
-  function ProductoPunto(ArrayA, ArrayB) {
-    let producto = 0;
+      if (!parche.includes(miembroParche)) parche.push(miembroParche);
+    });
+  });
 
-    for (let i = 0; i < ArrayA.cifras.length; i++) {
-      producto += ArrayA.cifras[i] * ArrayB.cifras[i];
-    }
+  //removes user selected from the parche
+  peopleSelected.forEach((personSlected) => {
+    parche.splice(
+      parche.findIndex(
+        (miembroParche) =>
+          personSlected.personData.correo === miembroParche.name
+      ),
+      1
+    );
+  });
 
-    return producto;
-  } //closes ProductoPunto method
+  //organizes parche based on similitud coseno
+  parche.sort((miembroParche1, miembroParche2) => {
+    return miembroParche2.similitudCoseno - miembroParche1.similitudCoseno;
+  });
 
-  function Magnitud(Array) {
-    let magnitud = 0;
+  //cuts parche size to the value the user chose
+  parche.length=groupSize.value;
+  
+  console.log(parche);
+} //closes Parchar method
 
-    for (let i = 0; i < Array.cifras.length; i++) {
-      magnitud += Math.pow(Array.cifras[i], 2);
-    }
+function SimilitudCoseno(personA, personB) {
+  let similitudCoseno = 0;
 
-    magnitud = Math.sqrt(magnitud);
-    return magnitud;
-  } //closes Magnitud method
+  personA = JSON.parse(JSON.stringify(personA));
+  personB = JSON.parse(JSON.stringify(personB));
 
-  body.appendChild(table);
-} //closes sucessFunction method
+  let productoPunto = ProductoPunto(personA, personB);
+  let magnitudA = Magnitud(personA);
+  let magnitudB = Magnitud(personB);
+
+  similitudCoseno = productoPunto / (magnitudA * magnitudB);
+  return similitudCoseno;
+} //closes SimilitudCoseno method
+
+function ProductoPunto(ArrayA, ArrayB) {
+  let producto = 0;
+
+  for (let i = 0; i < ArrayA.cifras.length; i++) {
+    producto += ArrayA.cifras[i] * ArrayB.cifras[i];
+  }
+
+  return producto;
+} //closes ProductoPunto method
+
+function Magnitud(Array) {
+  let magnitud = 0;
+
+  for (let i = 0; i < Array.cifras.length; i++) {
+    magnitud += Math.pow(Array.cifras[i], 2);
+  }
+
+  magnitud = Math.sqrt(magnitud);
+  return magnitud;
+} //closes Magnitud method
